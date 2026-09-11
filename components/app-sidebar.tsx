@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
-import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon } from "lucide-react"
+import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon, GraduationCapIcon } from "lucide-react"
 
 // This is sample data.
 const data = {
@@ -46,13 +46,36 @@ const data = {
   ],
   navMain: [
     {
+      title: "LMS",
+      url: "#",
+      icon: (
+        <GraduationCapIcon
+        />
+      ),
+      isActive: true,
+      items: [
+        {
+          title: "Danh sách môn học",
+          url: "/lms/subjects",
+        },
+        {
+          title: "Danh sách học viên",
+          url: "/lms/students",
+        },
+        {
+          title: "Điểm danh",
+          url: "/lms/attendance",
+        },
+      ],
+    },
+    {
       title: "Playground",
       url: "#",
       icon: (
         <TerminalSquareIcon
         />
       ),
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "History",
