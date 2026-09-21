@@ -8,6 +8,7 @@ import { FirebaseError } from "firebase/app"
 import { cn } from "cn"
 
 import { auth, googleProvider } from "@/lib/firebase"
+import { ensureUserProfile } from "@/features/users/services/user-service"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -62,7 +63,8 @@ export function LoginForm({
     setError(null)
     setIsEmailLoading(true)
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const credential = await signInWithEmailAndPassword(auth, email, password)
+      await ensureUserProfile(credential.user)
       router.push("/dashboard")
     } catch (err) {
       setError(getAuthErrorMessage(err))
@@ -75,7 +77,8 @@ export function LoginForm({
     setError(null)
     setIsGoogleLoading(true)
     try {
-      await signInWithPopup(auth, googleProvider)
+      const credential = await signInWithPopup(auth, googleProvider)
+      await ensureUserProfile(credential.user)
       router.push("/dashboard")
     } catch (err) {
       setError(getAuthErrorMessage(err))

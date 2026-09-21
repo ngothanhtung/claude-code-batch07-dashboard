@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
-import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon, GraduationCapIcon } from "lucide-react"
+import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon, GraduationCapIcon, ListTodoIcon, MessageCircleIcon, MicIcon, LineChartIcon } from "lucide-react"
 
 // This is sample data.
 const data = {
@@ -65,6 +65,74 @@ const data = {
         {
           title: "Điểm danh",
           url: "/lms/attendance",
+        },
+      ],
+    },
+    {
+      title: "Chat",
+      url: "#",
+      icon: (
+        <MessageCircleIcon
+        />
+      ),
+      isActive: false,
+      items: [
+        {
+          title: "Phòng chat",
+          url: "/chat",
+        },
+        {
+          title: "Quản lý phòng chat",
+          url: "/chat/manage",
+        },
+      ],
+    },
+    {
+      title: "Quiz",
+      url: "#",
+      icon: (
+        <MicIcon
+        />
+      ),
+      isActive: false,
+      items: [
+        {
+          title: "Vào quiz",
+          url: "/quiz",
+        },
+        {
+          title: "Điều khiển (Đạo diễn)",
+          url: "/quiz/director",
+        },
+      ],
+    },
+    {
+      title: "Doanh số",
+      url: "#",
+      icon: (
+        <LineChartIcon
+        />
+      ),
+      isActive: false,
+      items: [
+        {
+          title: "Doanh số thời gian thực",
+          url: "/sales",
+        },
+      ],
+    },
+    {
+      title: "Workspace",
+      url: "#",
+      icon: (
+        <ListTodoIcon
+        />
+      ),
+      isActive: false,
+      items: [
+        {
+          title: "Công việc",
+          url: "/workspace/tasks",
         },
       ],
     },
