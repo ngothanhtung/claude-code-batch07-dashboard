@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
 import { FirebaseError } from "firebase/app"
+import { signIn } from "next-auth/react"
 
 import { cn } from "cn"
 
@@ -52,6 +53,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [error, setError] = React.useState<string | null>(null)
@@ -65,7 +68,9 @@ export function LoginForm({
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password)
       await ensureUserProfile(credential.user)
-      router.push("/dashboard")
+      const idToken = await credential.user.getIdToken()
+      await signIn("credentials", { idToken, redirect: false })
+      router.push(callbackUrl)
     } catch (err) {
       setError(getAuthErrorMessage(err))
     } finally {
@@ -79,7 +84,9 @@ export function LoginForm({
     try {
       const credential = await signInWithPopup(auth, googleProvider)
       await ensureUserProfile(credential.user)
-      router.push("/dashboard")
+      const idToken = await credential.user.getIdToken()
+      await signIn("credentials", { idToken, redirect: false })
+      router.push(callbackUrl)
     } catch (err) {
       setError(getAuthErrorMessage(err))
     } finally {

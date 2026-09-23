@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { TaskAssigneeCombobox } from "@/features/workspace/tasks/components/task-assignee-combobox"
+import { TaskUserCombobox } from "@/features/workspace/tasks/components/task-user-combobox"
 import { TaskFieldCombobox } from "@/features/workspace/tasks/components/task-field-combobox"
 import { TaskTagsInput } from "@/features/workspace/tasks/components/task-tags-input"
 import {
@@ -37,6 +37,7 @@ const EMPTY_FORM: TaskInput = {
   status: "To do",
   priority: "Medium",
   assigneeId: null,
+  followerId: null,
   tags: [],
 }
 
@@ -67,6 +68,7 @@ export function TaskFormDialog({
               status: task.status,
               priority: task.priority,
               assigneeId: task.assigneeId,
+              followerId: task.followerId,
               tags: task.tags,
             }
           : EMPTY_FORM
@@ -154,13 +156,25 @@ export function TaskFormDialog({
             </div>
             <Field>
               <FieldLabel htmlFor="assignee">Người xử lý</FieldLabel>
-              <TaskAssigneeCombobox
+              <TaskUserCombobox
                 id="assignee"
                 value={form.assigneeId}
                 onValueChange={(assigneeId) =>
                   setForm((prev) => ({ ...prev, assigneeId }))
                 }
                 users={users}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="follower">Người theo dõi</FieldLabel>
+              <TaskUserCombobox
+                id="follower"
+                value={form.followerId}
+                onValueChange={(followerId) =>
+                  setForm((prev) => ({ ...prev, followerId }))
+                }
+                users={users}
+                placeholder="Không có"
               />
             </Field>
             <Field>

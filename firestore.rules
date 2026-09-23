@@ -1,0 +1,116 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAssignee(taskData) {
+      return isSignedIn()
+        && taskData.assignee != null
+        && taskData.assignee == /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function isFollower(taskData) {
+      return isSignedIn()
+        && taskData.follower != null
+        && taskData.follower == /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    // Users -----------------------------------------------------------
+    // Profile doc id == the user's own Firebase uid. Any signed-in user
+    // can look up any profile (task assignee pickers, comment authors,
+    // chat sender names, etc. all resolve arbitrary users' profiles).
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Roles / RBAC ------------------------------------------------------
+    // Admin-managed via console; clients only ever read these.
+    match /roles/{roleId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /roles-users/{assignmentId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Tasks (RLS: assignee edits, assignee + follower can view/comment) ------
+    match /tasks/{taskId} {
+      allow read: if isAssignee(resource.data) || isFollower(resource.data);
+      allow create: if isSignedIn();
+      allow update: if isAssignee(resource.data);
+      allow delete: if isAssignee(resource.data);
+
+      match /comments/{commentId} {
+        function parentTask() {
+          return get(/databases/$(database)/documents/tasks/$(taskId)).data;
+        }
+
+        allow read: if isAssignee(parentTask()) || isFollower(parentTask());
+        allow create: if isAssignee(parentTask()) || isFollower(parentTask());
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+
+    // Chat ---------------------------------------------------------------
+    match /chat-rooms/{roomId} {
+      allow read, create, update, delete: if isSignedIn();
+
+      match /messages/{messageId} {
+        allow read, create: if isSignedIn();
+        allow update, delete: if false;
+      }
+    }
+
+    // Sales ----------------------------------------------------------------
+    match /sales/{saleId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // LMS --------------------------------------------------------------
+    match /subjects/{subjectId} {
+      allow read, create, update, delete: if isSignedIn();
+    }
+
+    match /students/{studentId} {
+      allow read, create, update, delete: if isSignedIn();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    // Quiz -----------------------------------------------------------
+    // The /quiz/display screen is a public kiosk page with no Firebase
+    // sign-in at all, so reads here must stay open to everyone.
+    match /questions/{questionId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /quizState/{stateId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    match /answers/{answerId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /quizParticipants/{uid} {
+      allow read, create, update, delete: if isSignedIn();
+    }
+  }
+}

@@ -35,6 +35,7 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   assigneeId: string | null
+  followerId: string | null
   tags: string[]
   createdAt: string
   updatedAt: string
@@ -46,6 +47,7 @@ export type TaskInput = {
   status: TaskStatus
   priority: TaskPriority
   assigneeId: string | null
+  followerId: string | null
   tags: string[]
 }
 

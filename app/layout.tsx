@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { SessionProvider } from "next-auth/react"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -26,8 +27,10 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <TooltipProvider>{children}</TooltipProvider>
-          <Toaster />
+          <SessionProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+            <Toaster />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

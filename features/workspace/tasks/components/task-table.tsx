@@ -76,7 +76,8 @@ function buildColumns(
   onRequestDelete: (task: Task) => void,
   onOpenComments: (task: Task) => void,
   onOpenAttachments: (task: Task) => void,
-  assigneeNameById: Map<string, string>
+  assigneeNameById: Map<string, string>,
+  readOnly: boolean
 ) {
   return columnHelper.columns([
     columnHelper.accessor("id", {
@@ -128,6 +129,17 @@ function buildColumns(
         )
       },
     }),
+    columnHelper.accessor("followerId", {
+      header: "Người theo dõi",
+      cell: (info) => {
+        const followerId = info.getValue()
+        return (
+          <span className="text-muted-foreground">
+            {followerId ? (assigneeNameById.get(followerId) ?? "?") : "—"}
+          </span>
+        )
+      },
+    }),
     columnHelper.accessor("tags", {
       header: "Tags",
       cell: (info) => {
@@ -164,10 +176,12 @@ function buildColumns(
             <span className="sr-only">Thao tác</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit(row.original)}>
-              <PencilIcon />
-              Sửa
-            </DropdownMenuItem>
+            {readOnly ? null : (
+              <DropdownMenuItem onClick={() => onEdit(row.original)}>
+                <PencilIcon />
+                Sửa
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => onOpenAttachments(row.original)}>
               <PaperclipIcon />
               Tệp đính kèm
@@ -176,13 +190,15 @@ function buildColumns(
               <MessageSquareIcon />
               Bình luận
             </DropdownMenuItem>
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => onRequestDelete(row.original)}
-            >
-              <Trash2Icon />
-              Xóa
-            </DropdownMenuItem>
+            {readOnly ? null : (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => onRequestDelete(row.original)}
+              >
+                <Trash2Icon />
+                Xóa
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -198,6 +214,7 @@ export function TaskTable({
   onDelete,
   onOpenComments,
   onOpenAttachments,
+  readOnly = false,
 }: {
   tasks: Task[]
   users: UserProfile[]
@@ -206,6 +223,7 @@ export function TaskTable({
   onDelete: (task: Task) => Promise<void>
   onOpenComments: (task: Task) => void
   onOpenAttachments: (task: Task) => void
+  readOnly?: boolean
 }) {
   const [deleteTarget, setDeleteTarget] = React.useState<Task | null>(null)
   const [isDeleting, setIsDeleting] = React.useState(false)
@@ -223,9 +241,10 @@ export function TaskTable({
         setDeleteTarget,
         onOpenComments,
         onOpenAttachments,
-        assigneeNameById
+        assigneeNameById,
+        readOnly
       ),
-    [onEdit, onOpenComments, onOpenAttachments, assigneeNameById]
+    [onEdit, onOpenComments, onOpenAttachments, assigneeNameById, readOnly]
   )
 
   const table = useTable({

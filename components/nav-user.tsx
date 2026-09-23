@@ -1,7 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { signOut } from "firebase/auth"
+import { signOut as firebaseSignOut } from "firebase/auth"
+import { signOut as nextAuthSignOut } from "next-auth/react"
 
 import { auth } from "@/lib/firebase"
 import {
@@ -46,7 +47,8 @@ export function NavUser({
     .toUpperCase()
 
   async function handleLogout() {
-    await signOut(auth)
+    await firebaseSignOut(auth)
+    await nextAuthSignOut({ redirect: false })
     router.push("/login")
   }
 

@@ -10,16 +10,18 @@ import {
 } from "@/components/ui/combobox"
 import { getUserFullName, type UserProfile } from "@/features/users/types"
 
-export function TaskAssigneeCombobox({
+export function TaskUserCombobox({
   id,
   value,
   onValueChange,
   users,
+  placeholder = "Chưa gán",
 }: {
   id?: string
   value: string | null
   onValueChange: (value: string | null) => void
   users: UserProfile[]
+  placeholder?: string
 }) {
   const items = users.map((user) => ({
     value: user.id,
@@ -34,7 +36,7 @@ export function TaskAssigneeCombobox({
       isItemEqualToValue={(item, other) => item.value === other.value}
       onValueChange={(next) => onValueChange(next ? next.value : null)}
     >
-      <ComboboxInput id={id} readOnly placeholder="Chưa gán" showClear />
+      <ComboboxInput id={id} readOnly placeholder={placeholder} showClear />
       <ComboboxContent>
         <ComboboxEmpty>Không có người dùng nào.</ComboboxEmpty>
         <ComboboxList>

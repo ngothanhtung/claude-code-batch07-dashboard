@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -114,6 +115,7 @@ const data = {
         />
       ),
       isActive: false,
+      requiredRoles: ["sale-managers"],
       items: [
         {
           title: "Doanh số thời gian thực",
@@ -264,6 +266,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
+  const { data: session } = useSession()
+  const roles = session?.user?.roles ?? []
 
   const navUser = {
     name: user?.displayName || user?.email?.split("@")[0] || "Guest",
@@ -271,13 +275,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: user?.photoURL || "",
   }
 
+  const navMain = data.navMain.filter(
+    (item) => !item.requiredRoles || item.requiredRoles.some((role) => roles.includes(role))
+  )
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
